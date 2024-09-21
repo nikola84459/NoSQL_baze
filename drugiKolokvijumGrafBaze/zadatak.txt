@@ -1,0 +1,116 @@
+Kreiranje baze:
+
+CREATE
+(pera:Profesor{ime: "Pera", prezime: "Perić"}),
+(zika:Profesor{ime: "Žika", prezime: "Žikić"}),
+(tijana:Profesor{ime: "Tijana", prezime: "Tijanić"}),
+(aleksa:Profesor{ime: "Aleksa", prezime: "Aleksić"}),
+(uros:Profesor{ime: "Uroš", prezime: "Urošević"}),
+
+(ucenik1:Ucenik{ime: "Ucenik 1"}),
+(ucenik2:Ucenik{ime: "Ucenik 2"}),
+(ucenik3:Ucenik{ime: "Ucenik 3"}),
+(ucenik4:Ucenik{ime: "Ucenik 4"}),
+(ucenik5:Ucenik{ime: "Ucenik 5"}),
+(ucenik6:Ucenik{ime: "Ucenik 6"}),
+(ucenik7:Ucenik{ime: "Ucenik 7"}),
+(ucenik8:Ucenik{ime: "Ucenik 8"}),
+(ucenik9:Ucenik{ime: "Ucenik 9"}),
+(ucenik10:Ucenik{ime: "Ucenik 10"}),
+(ucenik11:Ucenik{ime: "Ucenik 11"}),
+(ucenik12:Ucenik{ime: "Ucenik 12"}),
+(ucenik13:Ucenik{ime: "Ucenik 13"}),
+(ucenik14:Ucenik{ime: "Ucenik 14"}),
+
+(o1:Odeljenje{naziv: "II/3"}),
+(o2:Odeljenje{naziv: "II/4"}),
+(o3:Odeljenje{naziv: "IV/2"}),
+
+(u1:Ucionica{naziv: "U1"}),
+(k1:Ucionica{naziv: "K1"}),
+(k2:Ucionica{naziv: "K2"}),
+(s2:Ucionica{naziv: "S2"}),
+(u2:Ucionica{naziv: "U2"}),
+
+(matematika:Predmet{naziv: "Matematika"}),
+(fizika:Predmet{naziv: "Fizika"}),
+(srpski:Predmet{naziv: "Srpski jezik"}),
+(biologija:Predmet{naziv: "Biologija"}),
+(informatika:Predmet{naziv: "Informatika"}),
+(hemija:Predmet{naziv: "Hemija"}),
+
+(pera)-[:PREDAJE]->(matematika),
+(zika)-[:PREDAJE]->(fizika),
+(tijana)-[:PREDAJE]->(biologija),
+(aleksa)-[:PREDAJE]->(srpski),
+(tijana)-[:PREDAJE]->(hemija),
+(uros)-[:PREDAJE]->(matematika),
+(pera)-[:PREDAJE]->(informatika),
+
+(ucenik1)-[:PRIPADA]->(o1),
+(ucenik2)-[:PRIPADA]->(o1),
+(ucenik3)-[:PRIPADA]->(o1),
+(ucenik4)-[:PRIPADA]->(o1),
+
+(ucenik5)-[:PRIPADA]->(o2),
+(ucenik6)-[:PRIPADA]->(o2),
+(ucenik7)-[:PRIPADA]->(o2),
+(ucenik8)-[:PRIPADA]->(o2),
+(ucenik9)-[:PRIPADA]->(o2),
+
+(ucenik10)-[:PRIPADA]->(o3),
+(ucenik11)-[:PRIPADA]->(o3),
+(ucenik12)-[:PRIPADA]->(o3),
+(ucenik13)-[:PRIPADA]->(o3),
+(ucenik14)-[:PRIPADA]->(o3),
+
+(o1)-[:SLUSA]->(matematika),
+(o1)-[:SLUSA]->(fizika),
+(o1)-[:SLUSA]->(biologija),
+(o1)-[:SLUSA]->(srpski),
+(o1)-[:SLUSA]->(hemija),
+
+(o2)-[:SLUSA]->(matematika),
+(o2)-[:SLUSA]->(biologija),
+(o2)-[:SLUSA]->(informatiku),
+
+(o3)-[:SLUSA]->(matematika),
+(o3)-[:SLUSA]->(fizika),
+(o3)-[:SLUSA]->(srpski),
+(o3)-[:SLUSA]->(hemija),
+
+(matematika)-[:ZAUZETA{dan: "Ponedeljak", vreme: "09-10"}]->(u1),
+(matematika)-[:ZAUZETA{dan: "Ponedeljak", vreme: "10-11"}]->(u1),
+(fizika)-[:ZAUZETA{dan: "Utorak", vreme: "10-11"}]->(u1),
+(biologija)-[:ZAUZETA{dan: "Utorak", vreme: "11-12"}]->(k1),
+(srpski)-[:ZAUZETA{dan: "Četvrtak", vreme: "09-10"}]->(s2),
+(hemija)-[:ZAUZETA{dan: "Četvrtak", vreme: "10-11"}]->(u1),
+(matematika)-[:ZAUZETA{dan: "Ponedeljak", vreme: "09-10"}]->(k2),
+(matematika)-[:ZAUZETA{dan: "Ponedeljak", vreme: "10-11"}]->(k2),
+(biologija)-[:ZAUZETA{dan: "Utorak", vreme: "10-11"}]->(k1),
+(informatika)-[:ZAUZETA{dan: "Utorak", vreme: "12-13"}]->(u1),
+(informatika)-[:ZAUZETA{dan: "Sreda", vreme: "10-11"}]->(u1),
+(matematika)-[:ZAUZETA{dan: "Ponedeljak", vreme: "09-10"}]->(u2),
+(matematika)-[:ZAUZETA{dan: "Ponedeljak", vreme: "10-11"}]->(u2),
+(fizika)-[:ZAUZETA{dan: "Utorak", vreme: "09-10"}]->(u1),
+(srpski)-[:ZAUZETA{dan: "Sreda", vreme: "09-10"}]->(s2),
+(hemija)-[:ZAUZETA{dan: "Sreda", vreme: "10-11"}]->(k1),
+(hemija)-[:ZAUZETA{dan: "Četvrtak", vreme: "09-10"}]->(u1)
+
+Upiti: 
+
+Upit 1:
+MATCH (p:Profesor)-[:PREDAJE]->(pr:Predmet)-[z:ZAUZETA{vreme: "09-10"}]->(u:Ucionica)
+RETURN pr.naziv as nazivPredmeta, z.dan as danOdrzavanja, p.ime as imeProfesora, p.prezime as prezimeProfesora
+
+Upit2: 
+MATCH (u:Ucenik)-[:PRIPADA]->(o:Odeljenje)-[:SLUSA]->(p:Predmet)-[:ZAUZETA]->(uc:Ucionica{naziv: "S2"})<-[:ZAUZETA]-(p)<-[:PREDAJE]-(pr:Profesor)
+RETURN u.ime, pr.ime, pr.prezime
+
+Upit3: 
+MATCH (u:Ucionica)<-[z:ZAUZETA{dan:"Sreda"}]-(p:Predmet)<-[:PREDAJE]-(pr:Profesor)
+RETURN u.naziv as Ucionica, pr.ime as imeProfesora, pr.prezime as prezimeProfesora, z.vreme as VremenskiPeriod
+
+Upit4:
+MATCH (o:Odeljenje{naziv: "IV/2"})-[:SLUSA]->(p:Predmet)<-[:PREDAJE]-(pr:Profesor)
+RETURN pr.ime as imeProfesora, pr.prezime as prezimeProfesora, p.naziv as nazivPredmeta

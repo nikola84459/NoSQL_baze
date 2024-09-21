@@ -1,0 +1,93 @@
+Zadatak 1:
+db.getCollection('zaposleni').find(
+{
+    $and: [
+        {"drzavaRodjenja": {$ne: "Srbija"}},
+        {"datumRodjenja": {$gte: "1968-01-01", $lte: "1998-12-31"}},
+        {"adresa.grad": {$regex: "\^B"}},
+        {"adresa.grad": {$regex: "\ad$"}},
+        {"kontakti.vrednost": {$regex: "\@yahoo.com$"}},
+        {"ugovori.osnovica": {$gt: 500}},
+        {"ugovori.0.datum": {$regex: "\^2003"}},
+        {"bonusi.vrednost": {$gt: 28}},
+        {"bonusi.datum": {$gt: "2010-01-01"}}
+        
+        
+    ]
+}
+).sort({"datumRodjenja": 1})
+
+Zadatak 2:
+var zaposleniZaUpis = [];
+var posebniZaposleni = db.zaposleni.find(
+{
+    $and: [
+        {"ugovori.datum": {$gte: "2003-01-01"}},
+        {"ugovori.datum": {$lte: "2008-12-31"}},
+        {"ugovori.osnovica": {$lt: 420}},
+        {"kontakti.vrednost": {$regex: "\@yahoo.com$"}}
+    ]
+        
+}).map(zapsoelni => zapsoelni)
+   .reduce((z, sviZapsoelni) =>  {
+            zaposleniZaUpis.push(sviZapsoelni)
+            
+    })
+    
+db.posebniZaposleni.drop()
+db.createCollection("posebniZaposleni")
+db.posebniZaposleni.insertMany(zaposleniZaUpis)
+
+Zadatak 3:
+db.zaposleni.createIndex({"is_arhiviran": 1}, {"name": "kolokvijum.idx_zaposleni_isArhiviran"})
+
+db.getCollection('zaposleni').update(
+    {
+        
+    },
+      
+    {
+        $set: {"isArhiviran": false}
+    },
+    
+    {
+        "multi" : true,  
+        "upsert" : false  
+    }
+);
+
+db.zaposleni.createIndex({"jmbg": 1}, {"name": "kolokvijum.uq_zaposleni_jmbg", unique: true})
+
+Zadatak 4:
+db.getCollection('zaposleni').update(
+    {
+        $and: [
+            {"ime": {$regex: "\^P"}},
+            {"drzavaRodjenja": "Slovenija"}
+        ]
+    },
+    
+    {
+        $set: {"isArhiviran": true}
+    },
+    
+    {
+        "multi" : true,  
+        "upsert" : false  
+    }
+);
+
+db.getCollection('zaposleni').update(
+    {
+       
+    },
+    
+    {
+        $set: {"adresa.ulica": "NoSQL"}
+    },
+    
+    {
+        "multi" : true,  
+        "upsert" : false  
+    }
+);
